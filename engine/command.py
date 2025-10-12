@@ -40,6 +40,14 @@ def takecommand():
 
 @eel.expose
 def allCommands(message=1):
+    # global stop_speaking
+
+
+    # if "stop" in query.lower() or "terminate" in query.lower():
+    #     stop_speaking = True
+    #     print("Terminating speech...")
+    #     return ""
+
 
     if message == 1:
         query = takecommand()

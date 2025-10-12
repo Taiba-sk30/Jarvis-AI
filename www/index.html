@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S - Advanced AI Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.1;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 80%, #00d4ff 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, #0099ff 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, #3366ff 0%, transparent 50%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 2;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            position: absolute;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 3;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #00d4ff, #0099ff, #3366ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 30px rgba(0, 212, 255, 0.5); }
+            to { text-shadow: 0 0 40px rgba(0, 212, 255, 0.8), 0 0 50px rgba(51, 102, 255, 0.5); }
+        }
+
+        .subtitle {
+            color: #a0a0a0;
+            font-size: 1.1rem;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        /* Central Core */
+        .central-core {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .core-rings {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
+
+        .ring-1 {
+            width: 300px;
+            height: 300px;
+            border-image: linear-gradient(45deg, #00d4ff, transparent) 1;
+            animation: rotate 10s linear infinite;
+        }
+
+        .ring-2 {
+            width: 350px;
+            height: 350px;
+            border-image: linear-gradient(-45deg, #0099ff, transparent) 1;
+            animation: rotate 15s linear infinite reverse;
+        }
+
+        .ring-3 {
+            width: 400px;
+            height: 400px;
+            border-image: linear-gradient(90deg, #3366ff, transparent) 1;
+            animation: rotate 20s linear infinite;
+        }
+
+        .core-center {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.3) 0%, rgba(51, 102, 255, 0.1) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            box-shadow: 
+                0 0 50px rgba(0, 212, 255, 0.4),
+                inset 0 0 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .pulse-dot {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            animation: pulse 2s ease-in-out infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* Status Text */
+        .status-text {
+            font-size: 1.3rem;
+            color: #00d4ff;
+            margin-bottom: 40px;
+            font-weight: 500;
+            text-align: center;
+            opacity: 0.9;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Input Container */
+        .input-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-bottom: 30px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 50px;
+            padding: 15px 25px;
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            border-color: #00d4ff;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .chat-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ffffff;
+            font-size: 1.1rem;
+            padding: 5px 15px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .chat-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .action-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #00d4ff, #0099ff);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 212, 255, 0.4);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .mic-btn.listening {
+            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            animation: pulse 1s infinite;
+        }
+
+        /* Control Panel */
+        .control-panel {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .control-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        /* Chat Sidebar */
+        .chat-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(0, 212, 255, 0.3);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-sidebar.open {
+            right: 0;
+        }
+
+        .chat-header {
+            padding: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .close-chat {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .close-chat:hover {
+            opacity: 1;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 15px 20px;
+            border-radius: 20px;
+            max-width: 85%;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            margin-left: auto;
+            color: white;
+        }
+
+        .message.assistant {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        /* Wave Animation */
+        .wave-container {
+            position: absolute;
+            bottom: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 100px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .wave-container.active {
+            opacity: 1;
+        }
+
+        .wave {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(0, 212, 255, 0.3) 25%, 
+                rgba(0, 153, 255, 0.5) 50%, 
+                rgba(51, 102, 255, 0.3) 75%, 
+                transparent 100%);
+            animation: wave 1.5s ease-in-out infinite;
+            border-radius: 50px;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleX(0.8) scaleY(0.4); }
+            50% { transform: scaleX(1.2) scaleY(1); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .central-core {
+                width: 300px;
+                height: 300px;
+            }
+
+            .ring-1 { width: 200px; height: 200px; }
+            .ring-2 { width: 250px; height: 250px; }
+            .ring-3 { width: 300px; height: 300px; }
+
+            .core-center {
+                width: 150px;
+                height: 150px;
+            }
+
+            .pulse-dot {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+
+            .logo {
+                font-size: 2rem;
+            }
+
+            .chat-sidebar {
+                width: 100vw;
+                right: -100vw;
+            }
+
+            .control-panel {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 212, 255, 0.3);
+            border-top: 3px solid #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-spin"></div>
+    
+    <div class="container">
+        <!-- Hidden elements for compatibility -->
+        <section id="Oval" style="display: contents;">
+            <div class="header">
+                <h1 class="logo">J.A.R.V.I.S</h1>
+                <p class="subtitle">Just A Rather Very Intelligent System</p>
+            </div>
+
+            <div class="central-core">
+                <div class="core-rings ring-3"></div>
+                <div class="core-rings ring-2"></div>
+                <div class="core-rings ring-1"></div>
+                <div class="core-center">
+                    <div class="pulse-dot">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                </div>
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+
+            <div class="status-text">Ready to assist you</div>
+
+            <div class="wave-container">
+                <div class="wave"></div>
+            </div>
+
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <!-- Keep original IDs for compatibility -->
+                    <input type="text" class="chat-input" placeholder="Ask me anything..." id="chatbox" name="chatbox">
+                    <div class="action-buttons">
+                        <button class="action-btn send-btn" id="SendBtn" style="display: none;">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                        <button class="action-btn mic-btn" id="MicBtn">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="action-btn" id="ChatBtn">
+                            <i class="fas fa-comments"></i>
+                        </button>
+                        <button class="action-btn" id="SettingsBtn">
+                            <i class="fas fa-cog"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="SiriWave" style="display: none;">
+            <div class="central-core">
+                <div class="core-rings ring-3"></div>
+                <div class="core-rings ring-2"></div>
+                <div class="core-rings ring-1"></div>
+                <div class="core-center">
+                    <div class="pulse-dot">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="status-text">Hello, I am Jarvis</div>
+            <div class="wave-container active">
+                <div class="wave"></div>
+            </div>
+        </section>
+    </div>
+
+    <div class="control-panel">
+        <button class="control-btn" id="settingsBtn" title="Settings">
+            <i class="fas fa-cog"></i>
+        </button>
+        <button class="control-btn" id="helpBtn" title="Help">
+            <i class="fas fa-question"></i>
+        </button>
+    </div>
+
+    <div class="chat-sidebar" id="offcanvasScrolling">
+        <div class="chat-header">
+            <h3 class="chat-title">Conversation</h3>
+            <button class="close-chat" id="closeChat">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="chat-messages" id="chat-canvas-body">
+            <!-- Messages will be added here -->
+        </div>
+    </div>
+
+    <!-- Include eel.js for Python backend connection -->
+    <script src="/eel.js"></script>
+
+    <script>
+        class ModernJarvis {
+            constructor() {
+                this.isListening = false;
+                this.isProcessing = false;
+                this.initializeElements();
+                this.bindEvents();
+                this.setupAnimations();
+            }
+
+            initializeElements() {
+                // Use your original IDs for compatibility with error checking
+                this.chatInput = document.getElementById('chatbox');
+                this.sendBtn = document.getElementById('SendBtn');
+                this.micBtn = document.getElementById('MicBtn');
+                this.chatBtn = document.getElementById('ChatBtn');
+                this.settingsBtn = document.getElementById('SettingsBtn');
+                this.chatSidebar = document.getElementById('offcanvasScrolling');
+                this.closeChat = document.getElementById('closeChat');
+                this.chatMessages = document.getElementById('chat-canvas-body');
+                this.statusText = document.querySelector('.status-text');
+                this.waveContainer = document.querySelector('.wave-container');
+                this.loading = document.querySelector('.loading');
+                this.coreCenter = document.querySelector('.core-center');
+
+                // Check if all critical elements exist
+                const requiredElements = [
+                    { element: this.chatInput, name: 'chatInput' },
+                    { element: this.sendBtn, name: 'sendBtn' },
+                    { element: this.micBtn, name: 'micBtn' },
+                    { element: this.chatBtn, name: 'chatBtn' }
+                ];
+
+                for (const { element, name } of requiredElements) {
+                    if (!element) {
+                        console.error(`Critical element not found: ${name}`);
+                    }
+                }
+            }
+
+            bindEvents() {
+                // Input events with null checks
+                if (this.chatInput) {
+                    this.chatInput.addEventListener('input', () => this.toggleSendButton());
+                    this.chatInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            this.sendMessage();
+                        }
+                    });
+                }
+
+                // Button events with null checks
+                if (this.sendBtn) {
+                    this.sendBtn.addEventListener('click', () => this.sendMessage());
+                }
+                
+                if (this.micBtn) {
+                    this.micBtn.addEventListener('click', () => this.toggleMicrophone());
+                }
+                
+                if (this.chatBtn) {
+                    this.chatBtn.addEventListener('click', () => this.toggleChat());
+                }
+                
+                if (this.closeChat) {
+                    this.closeChat.addEventListener('click', () => this.toggleChat());
+                }
+                
+                if (this.settingsBtn) {
+                    this.settingsBtn.addEventListener('click', () => this.showSettings());
+                }
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
+                    if (e.metaKey && e.key === 'j') {
+                        e.preventDefault();
+                        this.toggleMicrophone();
+                    }
+                });
+            }
+
+            setupAnimations() {
+                // Add floating animation to core
+                this.animateCore();
+            }
+
+            toggleSendButton() {
+                if (!this.chatInput || !this.sendBtn || !this.micBtn) return;
+                
+                const hasText = this.chatInput.value.trim().length > 0;
+                this.sendBtn.style.display = hasText ? 'flex' : 'none';
+                this.micBtn.style.display = hasText ? 'none' : 'flex';
+            }
+
+            async sendMessage() {
+                if (!this.chatInput) return;
+                
+                const message = this.chatInput.value.trim();
+                if (!message || this.isProcessing) return;
+
+                this.addMessage(message, 'user');
+                this.chatInput.value = '';
+                this.toggleSendButton();
+                
+                await this.processMessage(message);
+            }
+
+            async toggleMicrophone() {
+                if (this.isListening) {
+                    this.stopListening();
+                } else {
+                    this.startListening();
+                }
+            }
+
+            startListening() {
+                if (this.isProcessing || !this.micBtn || !this.statusText || !this.waveContainer) return;
+
+                this.isListening = true;
+                this.micBtn.classList.add('listening');
+                this.statusText.textContent = 'Listening...';
+                this.waveContainer.classList.add('active');
+                
+                // Call your existing voice recognition function
+                try {
+                    if (typeof eel !== 'undefined' && eel.playAssistantSound) {
+                        eel.playAssistantSound();
+                    }
+                    if (typeof eel !== 'undefined' && eel.allCommands) {
+                        eel.allCommands()();
+                    }
+                } catch (error) {
+                    console.error('Eel function call failed:', error);
+                    // Fallback behavior
+                    setTimeout(() => {
+                        this.stopListening();
+                        this.addMessage('Voice recognition not available. Please type your message.', 'assistant');
+                    }, 1000);
+                }
+            }
+
+            stopListening() {
+                this.isListening = false;
+                if (this.micBtn) this.micBtn.classList.remove('listening');
+                if (this.statusText) this.statusText.textContent = 'Ready to assist you';
+                if (this.waveContainer) this.waveContainer.classList.remove('active');
+            }
+
+            async processMessage(message) {
+                debugLog('Processing message:', message);
+                
+                this.isProcessing = true;
+                this.showLoading();
+                this.statusText.textContent = 'Processing...';
+
+                try {
+                    // Call your existing command processing
+                    if (typeof eel !== 'undefined' && eel.allCommands) {
+                        debugLog('Calling eel.allCommands with message:', message);
+                        eel.allCommands(message);
+                    } else {
+                        debugLog('Eel not available - using fallback');
+                        // Fallback if eel is not available
+                        this.addMessage('Backend connection not available. Please make sure your Python server is running.', 'assistant');
+                        this.hideLoading();
+                        this.statusText.textContent = 'Ready to assist you';
+                        this.isProcessing = false;
+                    }
+                    
+                } catch (error) {
+                    console.error('Error processing message:', error);
+                    this.addMessage('Sorry, I encountered an error. Please check if the backend is running.', 'assistant');
+                    this.hideLoading();
+                    this.statusText.textContent = 'Ready to assist you';
+                    this.isProcessing = false;
+                }
+            }
+
+            addMessage(message, type) {
+                if (!this.chatMessages) return;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${type}`;
+                messageDiv.textContent = message;
+                
+                this.chatMessages.appendChild(messageDiv);
+                this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+
+                // Auto-open chat for new messages
+                if (type === 'assistant' && this.chatSidebar && !this.chatSidebar.classList.contains('open')) {
+                    this.toggleChat();
+                }
+            }
+
+            toggleChat() {
+                if (this.chatSidebar) {
+                    this.chatSidebar.classList.toggle('open');
+                }
+            }
+
+            showLoading() {
+                if (this.loading) this.loading.classList.add('active');
+                if (this.coreCenter) this.coreCenter.style.opacity = '0.3';
+            }
+
+            hideLoading() {
+                if (this.loading) this.loading.classList.remove('active');
+                if (this.coreCenter) this.coreCenter.style.opacity = '1';
+            }
+
+            showSettings() {
+                const settingsMenu = `
+🔧 **J.A.R.V.I.S Settings & Debug**
+
+**Current Status:**
+• Backend: ${typeof eel !== 'undefined' ? '✅ Connected' : '❌ Disconnected'}
+• Processing: ${this.isProcessing ? '🟡 Active' : '✅ Ready'}
+• Listening: ${this.isListening ? '🔴 Active' : '⚪ Inactive'}
+
+**Debug Commands:**
+• Type "debug info" to see system status
+• Type "test command" to test backend connection
+• Check browser console (F12) for detailed logs
+
+**Troubleshooting:**
+1. Make sure you're running "python run.py"
+2. Check if port 8000 is accessible
+3. Verify your contacts database is set up
+4. Check Python console for error messages
+
+**Contact Commands Format:**
+• "phone call [exact contact name]"
+• "send message to [exact contact name]"
+• "video call [exact contact name]"
+
+Make sure the contact name matches exactly what's in your database!
+                `;
+                
+                this.addMessage(settingsMenu, 'assistant');
+                if (!this.chatSidebar.classList.contains('open')) {
+                    this.toggleChat();
+                }
+            }
+
+            showHelp() {
+                this.addMessage(`Welcome to J.A.R.V.I.S! Here are some things you can try:
+                
+🎯 **Voice & Text Commands:**
+• "open [app name]" - Launch applications (e.g., "open notepad")
+• "play [song] on YouTube" - Play music (e.g., "play despacito on youtube")
+• "send message to [contact]" - WhatsApp messaging
+• "phone call [contact]" - Make WhatsApp voice calls
+• "video call [contact]" - Make WhatsApp video calls
+
+🎤 **Voice Activation:**
+• Click the microphone button
+• Use Cmd+J (Mac) or Win+J (Windows) hotkey
+
+💡 **Tips:**
+• Make sure your contacts are added to the database
+• Speak clearly for better voice recognition
+• Check console (F12) for debug information
+
+Type your command or click the microphone to get started!`, 'assistant');
+                
+                if (!this.chatSidebar.classList.contains('open')) {
+                    this.toggleChat();
+                }
+            }
+
+            // Add debug panel
+            showDebugInfo() {
+                const debugInfo = {
+                    'Eel Available': typeof eel !== 'undefined',
+                    'Backend Functions': typeof eel !== 'undefined' ? Object.keys(eel).length : 0,
+                    'Processing State': this.isProcessing,
+                    'Listening State': this.isListening
+                };
+                
+                console.table(debugInfo);
+                this.addMessage('Debug info logged to console (F12)', 'assistant');
+            }
+
+            animateCore() {
+                // Add subtle floating animation
+                const coreCenter = document.querySelector('.core-center');
+                if (!coreCenter) return;
+                
+                let angle = 0;
+                const animate = () => {
+                    angle += 0.01;
+                    const offset = Math.sin(angle) * 3;
+                    coreCenter.style.transform = `translateY(${offset}px)`;
+                    requestAnimationFrame(animate);
+                };
+                animate();
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.jarvisInstance = new ModernJarvis();
+            window.jarvis = window.jarvisInstance; // For backwards compatibility
+            
+            console.log('Jarvis initialized successfully');
+            console.log('Eel available:', typeof eel !== 'undefined');
+        });
+
+        // Global variables for eel integration
+        window.jarvisInstance = null;
+        let debugMode = true; // Set to false to disable debug logs
+
+        function debugLog(message, data = null) {
+            if (debugMode) {
+                console.log(`[JARVIS DEBUG] ${message}`, data || '');
+            }
+        }
+
+        // Expose functions for your Python backend (must be at global scope)
+        function DisplayMessage(message) {
+            debugLog('DisplayMessage called with:', message);
+            
+            const statusText = document.querySelector('.status-text');
+            if (statusText) {
+                statusText.textContent = message;
+            }
+            
+            if (window.jarvisInstance) {
+                // Don't add system messages like "listening..." to chat
+                if (!message.toLowerCase().includes('listening') && 
+                    !message.toLowerCase().includes('recognizing')) {
+                    window.jarvisInstance.addMessage(message, 'assistant');
+                }
+            }
+        }
+
+        function ShowHood() {
+            debugLog('ShowHood called');
+            
+            const oval = document.getElementById('Oval');
+            const siriWave = document.getElementById('SiriWave');
+            
+            if (oval) oval.style.display = 'contents';
+            if (siriWave) siriWave.style.display = 'none';
+            
+            if (window.jarvisInstance) {
+                window.jarvisInstance.stopListening();
+                window.jarvisInstance.hideLoading();
+                // Reset processing state
+                window.jarvisInstance.isProcessing = false;
+            }
+        }
+
+        function senderText(message) {
+            debugLog('senderText called with:', message);
+            
+            if (window.jarvisInstance && message && message.trim()) {
+                window.jarvisInstance.addMessage(message, 'user');
+            }
+        }
+
+        function receiverText(message) {
+            debugLog('receiverText called with:', message);
+            
+            if (window.jarvisInstance && message && message.trim()) {
+                window.jarvisInstance.addMessage(message, 'assistant');
+            }
+        }
+
+        // Expose functions to eel
+        if (typeof eel !== 'undefined') {
+            eel.expose(DisplayMessage);
+            eel.expose(ShowHood);
+            eel.expose(senderText);
+            eel.expose(receiverText);
+            debugLog('Eel functions exposed successfully');
+        } else {
+            console.warn('[JARVIS] Eel not available - running in demo mode');
+        }
+    </script>
+</body>
+</html>

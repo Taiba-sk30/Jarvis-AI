@@ -4,7 +4,8 @@ app = Flask(__name__, static_folder=".")
 
 @app.route("/")
 def home():
-    return send_from_directory(".", "index.html")
+    return send_from_directory("www", "index.html")
 
 if __name__ == "__main__":
     app.run()
+
